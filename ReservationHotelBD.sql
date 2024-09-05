@@ -22,7 +22,6 @@ CREATE TABLE Customers (
     customer_id SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
     phone_number VARCHAR(15)
 );
 
@@ -76,6 +75,8 @@ BEGIN
 END;
 $$;
 
+select * from hotels
+
 CALL CheckRoomAvailability(2, '2024-01-01', '2024-01-05');
 
 CREATE OR REPLACE PROCEDURE CreateReservation(
@@ -103,7 +104,7 @@ BEGIN
 END;
 $$;
 
-CALL CreateReservation(2, 18, '2024-01-01', '2024-01-05');
+CALL CreateReservation(2, 24, '2024-01-01', '2024-01-05');
 
 CALL CheckRoomAvailability(2, '2024-01-01', '2024-01-05');
 
@@ -132,11 +133,8 @@ BEGIN
 END;
 $$;
 
+select * from rooms
 
-
-CALL CancelReservation(2, 18);
+CALL CancelReservation(2, 24);
 
 CALL CheckRoomAvailability(2, '2024-01-01', '2024-01-05');
-
-
-
