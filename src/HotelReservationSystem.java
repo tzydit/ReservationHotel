@@ -73,25 +73,35 @@ public class HotelReservationSystem {
     }
 
     private static void insertCustomers(Connection conn) throws SQLException {
-        String insertCustomerSQL = "INSERT INTO Customers (first_name, last_name, email, phone_number) VALUES (?, ?, ?, ?)";
+        String insertCustomerSQL = "INSERT INTO Customers (first_name, last_name, phone_number) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(insertCustomerSQL)) {
+            Random random = new Random();
             for (int i = 1; i <= 500000; i++) {
                 stmt.setString(1, "FirstName" + i);
                 stmt.setString(2, "LastName" + i);
-                stmt.setString(3, "email" + i + "@domain.com");
-                stmt.setString(4, "1234567890");
+                stmt.setString(3, "1234567890");
                 stmt.addBatch();
                 if (i % 1000 == 0) {
-                    stmt.executeBatch();
+                    try {
+                        stmt.executeBatch();
+                    } catch (BatchUpdateException e) {
+                        e.printStackTrace();
+                        // Lida com exceções de lote se necessário
+                    }
                 }
             }
-            stmt.executeBatch();
+            try {
+                stmt.executeBatch();
+            } catch (BatchUpdateException e) {
+                e.printStackTrace();
+                // Lida com exceções de lote se necessário
+            }
         }
     }
 
     private static void insertReservations(Connection conn) throws SQLException {
         String selectRoomSQL = "SELECT hotel_id FROM Rooms WHERE room_id = ?";
-        String insertReservationSQL = "INSERT INTO Reservations (customer_id, room_id, hotel_id, check_in_date, check_out_date) VALUES (?, ?, ?, ?, ?)";
+        String insertReservationSQL = "INSERT INTO Reservations (customer_id, room_id, check_in_date, check_out_date) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement selectRoomStmt = conn.prepareStatement(selectRoomSQL);
              PreparedStatement insertReservationStmt = conn.prepareStatement(insertReservationSQL)) {
@@ -108,17 +118,26 @@ public class HotelReservationSystem {
 
                     insertReservationStmt.setInt(1, random.nextInt(500000) + 1); // Cliente aleatório
                     insertReservationStmt.setInt(2, roomId); // Quarto aleatório
-                    insertReservationStmt.setInt(3, hotelId); // Hotel correspondente
-                    insertReservationStmt.setDate(4, Date.valueOf("2024-01-01"));
-                    insertReservationStmt.setDate(5, Date.valueOf("2024-01-05"));
+                    insertReservationStmt.setDate(3, Date.valueOf("2024-01-01"));
+                    insertReservationStmt.setDate(4, Date.valueOf("2024-01-05"));
                     insertReservationStmt.addBatch();
                 }
 
                 if (i % 1000 == 0) {
-                    insertReservationStmt.executeBatch();
+                    try {
+                        insertReservationStmt.executeBatch();
+                    } catch (BatchUpdateException e) {
+                        e.printStackTrace();
+                        // Lida com exceções de lote se necessário
+                    }
                 }
             }
-            insertReservationStmt.executeBatch();
+            try {
+                insertReservationStmt.executeBatch();
+            } catch (BatchUpdateException e) {
+                e.printStackTrace();
+                // Lida com exceções de lote se necessário
+            }
         }
     }
 }
